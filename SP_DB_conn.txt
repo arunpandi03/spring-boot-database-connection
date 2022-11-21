@@ -1,0 +1,227 @@
+package com.example.demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication (scanBasePackages = "com.example.demo")
+public class ApSpDbApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ApSpDbApplication.class, args);
+	}
+
+}
+
+
+-------------------------------------------------------------------
+
+package com.example.demo;
+
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+
+public class ServletInitializer extends SpringBootServletInitializer {
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(ApSpDbApplication.class);
+	}
+
+}
+
+-------------------------------------------------------------------------------
+
+package com.example.demo.controller;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.repository.repositoryClass;
+import com.example.demo.simple.simple;
+
+@RestController
+@RequestMapping("/api/")
+public class controllerClass {
+
+	@Autowired
+	repositoryClass rc;
+
+	@GetMapping(value = "testAPI1")
+	public ResponseEntity<?> employeeInformation() {
+
+		List<simple> mymenu =rc.Read();
+
+		return new ResponseEntity<>(mymenu, HttpStatus.OK);
+	}
+}
+
+
+-----------------------------------------------------------------------
+
+package com.example.demo.repository;
+import java.util.*;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import com.example.demo.simple.simple;
+
+
+
+@Repository
+public class repositoryClass {
+
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+
+	static final String SQL = "select * from ARUN_MENU";
+
+	public List<simple> Read() {
+		
+		List<simple> mymenu = new ArrayList<simple>();
+		
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(SQL);
+
+		for (Map<String, Object> row : rows) {
+			simple menu = new simple();
+
+			menu.setMenu_id((int) row.get("menu_id"));
+			menu.setMenu_name((String) row.get("menu_name"));
+			menu.setPrice((java.lang.Double) row.get("price"));
+			mymenu.add(menu);
+		}
+
+		return mymenu;
+
+	}
+
+}
+
+
+--------------------------------------------------------------------------
+
+package com.example.demo.simple;
+
+public class simple {
+
+	private int menu_id;
+	private String menu_name;
+	private java.lang.Double price;
+
+	public int getMenu_id() {
+		return menu_id;
+	}
+
+	public void setMenu_id(int menu_id) {
+		this.menu_id = menu_id;
+	}
+
+	public String getMenu_name() {
+		return menu_name;
+	}
+
+	public void setMenu_name(String menu_name) {
+		this.menu_name = menu_name;
+	}
+
+	public java.lang.Double getPrice() {
+		return price;
+	}
+
+	public void setPrice(java.lang.Double f) {
+		this.price = f;
+	}
+
+	@Override
+	public String toString() {
+		return "simple [menu_id=" + menu_id + ", menu_name=" + menu_name + ", price=" + price + "]";
+	}
+
+}
+
+
+-------------------------------------------------------------------------------
+
+spring.datasource.url=jdbc:sqlserver://192.168.168.12;databaseName=New_joinee_2022;encrypt=true;trustServerCertificate=true;
+spring.datasource.username=NewJoinee2022
+spring.datasource.password=P@ssw0rd
+spring.datasource.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver
+spring.jpa.show-sql=true
+spring.jpa.hibernate.dialect=org.hibernate.dialect.SQLServer2012Dialect
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.show-sql=true
+spring.hibernate.show_sql=true
+
+
+-----------------------------------------------------------------------------
+
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.7.5</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.package</groupId>
+	<artifactId>ap_sp_db</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>ap_sp_db</name>
+	<description>Demo project for Spring Boot</description>
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+	<dependencies>
+	<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
